@@ -103,24 +103,27 @@ for metric in metrics:
 
 
 
-app = dash.Dash(__name__)
-app.layout = html.Div(children=headers+[
-    dash_table.DataTable(pd.read_csv("https://git.io/Juf1t").to_dict('records'),[{"name": i, "id": i} for i in pd.read_csv("https://git.io/Juf1t").columns], id='tbl'),
-    dcc.Graph(id='co2-graph', animate=True),
-    dcc.Graph(id='temp-graph', animate=True),
-    dcc.Graph(id='humidity-graph', animate=True),
-    dcc.Interval(id="refresh", interval=5*1000, n_intervals=0),
-    ])
+def init_dashboard(server):
+    dash_app = dash.Dash(
+            server=server,
+            routes_pathname_prefix='/plants/',
+            external_stylesheets=['/static/css/custom.css',]
+            )
+    dash_app.layout = html.Div(children=headers+[
+        dash_table.DataTable(pd.read_csv("https://git.io/Juf1t").to_dict('records'),[{"name": i, "id": i} for i in pd.read_csv("https://git.io/Juf1t").columns], id='tbl'),
+        dcc.Graph(id='co2-graph', animate=True),
+        dcc.Graph(id='temp-graph', animate=True),
+        dcc.Graph(id='humidity-graph', animate=True),
+        dcc.Interval(id="refresh", interval=5*1000, n_intervals=0),
+        ])
 
+    @app.callback([Output("co2-graph", "figure"), Output("temp-graph", "figure"), Output("humidity-graph", "figure"), Output("tbl", "data")], Input("refresh", "n_intervals"))
+    def update(n_intervals):
+        df = pd.DataFrame(measure_air(scd))#.append(pd.DataFrame(measure_soil(tca)))
+        graphs = [graph_from_metric(df, metric) for metric in metrics]
+        co2, airtemp, humidity = graphs
+        #df = pd.read_sql("select * from temp order by dttm desc limit 1", con) 
+        dt = pd.read_csv("https://git.io/Juf1t").to_dict('records')
+        return co2, airtemp, humidity, dt
 
-@app.callback([Output("co2-graph", "figure"), Output("temp-graph", "figure"), Output("humidity-graph", "figure"), Output("tbl", "data")], Input("refresh", "n_intervals"))
-def update(n_intervals):
-    df = pd.DataFrame(measure_air(scd))#.append(pd.DataFrame(measure_soil(tca)))
-    graphs = [graph_from_metric(df, metric) for metric in metrics]
-    co2, airtemp, humidity = graphs
-    #df = pd.read_sql("select * from temp order by dttm desc limit 1", con) 
-    dt = pd.read_csv("https://git.io/Juf1t").to_dict('records')
-    return co2, airtemp, humidity, dt
-
-if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port='8050')
+    return dash_app.server
