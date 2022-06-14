@@ -16,7 +16,7 @@ import plotly.graph_objs as go
 import pandas as pd
 
 
-def measure_air(scd30):
+def measure_air(scd30, out='raw'):
     """
     Measure CO2 in air
     """
@@ -27,6 +27,8 @@ def measure_air(scd30):
     temp = scd.temperature
     temp = ((temp*(9/5))+32) # convert C -> F degrees
     humidity = scd.relative_humidity
+    if out=='raw':
+        return pd.DataFrame({'co2': [co2], 'temp': [temp], 'humidity': [humidity]})
     data = {'metrics': ['co2', 'temp', 'humidity']
             , 'values': [co2, temp, humidity]}
     return data
@@ -73,35 +75,6 @@ scd = adafruit_scd30.SCD30(i2c)
 #graphs_html = [dcc.Graph(id=f'{metric}-graph', figure=graph) for metric, graph in graphs.items()]
 headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".')]
 
-metrics = ['co2', 'temp', 'humidity']
-q = {metric: {'X': deque(maxlen=100), 'Y': deque(maxlen=100)} for metric in metrics}
-
-
-def append_metric_val(metric, val):
-    dttm = datetime.datetime.strftime(datetime.datetime.now(), '%H:%M:%S')
-    q[metric]['X'].append(dttm)
-    q[metric]['Y'].append(val)
-
-
-def graph_from_metric(df, metric):
-    filtered_df = df[df['metrics']==metric]
-    yval = filtered_df['values'].iloc[0]
-    append_metric_val(metric, yval)
-    data = go.Scatter(x=list(q[metric]['X']), y=list(q[metric]['Y']), name=metric, showlegend=False, mode='lines')
-    grph = {'data': [data],
-            'layout': go.Layout(
-                xaxis=dict(range=[min(q[metric]['X']), max(q[metric]['X'])]),
-                yaxis=dict(range=[min(q[metric]['Y']), max(q[metric]['Y'])]),)}
-    return grph
-
-
-df = pd.DataFrame(measure_air(scd))
-for metric in metrics:
-    filt = df[df['metrics']==metric]
-    val = filt['values'].iloc[0]
-    append_metric_val(metric, val)
-
-
 
 def init_dashboard(server):
     dash_app = dash.Dash(
@@ -110,20 +83,13 @@ def init_dashboard(server):
             external_stylesheets=['/static/css/custom.css',]
             )
     dash_app.layout = html.Div(children=headers+[
-        dash_table.DataTable(pd.read_csv("https://git.io/Juf1t").to_dict('records'),[{"name": i, "id": i} for i in pd.read_csv("https://git.io/Juf1t").columns], id='tbl'),
-        dcc.Graph(id='co2-graph', animate=True),
-        dcc.Graph(id='temp-graph', animate=True),
-        dcc.Graph(id='humidity-graph', animate=True),
+        dash_table.DataTable(measure_air(scd).to_dict('records'),[{"name": i, "id": i} for i in measure_air(scd).columns], id='tbl'),
         dcc.Interval(id="refresh", interval=5*1000, n_intervals=0),
         ])
 
-    @app.callback([Output("co2-graph", "figure"), Output("temp-graph", "figure"), Output("humidity-graph", "figure"), Output("tbl", "data")], Input("refresh", "n_intervals"))
+    @dash_app.callback([Output("tbl", "data")], Input("refresh", "n_intervals"))
     def update(n_intervals):
-        df = pd.DataFrame(measure_air(scd))#.append(pd.DataFrame(measure_soil(tca)))
-        graphs = [graph_from_metric(df, metric) for metric in metrics]
-        co2, airtemp, humidity = graphs
-        #df = pd.read_sql("select * from temp order by dttm desc limit 1", con) 
-        dt = pd.read_csv("https://git.io/Juf1t").to_dict('records')
-        return co2, airtemp, humidity, dt
+        dt = measure_air(scd).to_dict('records')
+        return dt
 
     return dash_app.server
