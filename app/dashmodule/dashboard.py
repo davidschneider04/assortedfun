@@ -54,25 +54,6 @@ def measure_soil(tca, num_sensors=4):
     return data
 
 
-
-i2c = busio.I2C(board.SCL, board.SDA, frequency=50000)
-"""
-# create tca object based on i2c bus
-tca = adafruit_tca9548a.TCA9548A(i2c)
-for channel in range(8):
-    time.sleep(1)
-    if tca[channel].try_lock():
-        addresses = tca[channel].scan()
-        tca[channel].unlock()
-# create multiplexer object after unlocks
-tca = adafruit_tca9548a.TCA9548A(i2c)
-"""
-scd = adafruit_scd30.SCD30(i2c)
-
-#data = pd.DataFrame(measure_air(scd))
-#graphs = {metric:px.bar(data[data['metrics']==metric], x='metrics', y='values', barmode='group') 
-#        for metric in data['metrics'].unique()}
-#graphs_html = [dcc.Graph(id=f'{metric}-graph', figure=graph) for metric, graph in graphs.items()]
 headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".')]
 
 
