@@ -77,6 +77,8 @@ headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fin
 
 
 def init_dashboard(server):
+    i2c = busio.I2C(board.SCL, board.SDA, frequency=50000)
+    scd = adafruit_scd30.SCD30(i2c)
     dash_app = dash.Dash(
             server=server,
             routes_pathname_prefix='/plants/',
@@ -90,6 +92,6 @@ def init_dashboard(server):
     @dash_app.callback([Output("tbl", "data")], Input("refresh", "n_intervals"))
     def update(n_intervals):
         dt = measure_air(scd).to_dict('records')
-        return dt
+        return [dt]
 
     return dash_app.server
