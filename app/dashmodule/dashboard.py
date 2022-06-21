@@ -36,7 +36,7 @@ class Haus:
 
     def change_lighting(self, change_to, get_value=False):
         if get_value:
-            return self.dac.value
+            return bool(self.dac.value)
         assert change_to in ['off', 'on']
         normalized_values = {'off': 0, 'on': 1}
         self.dac.normalized_value = normalized_values[change_to]
@@ -53,7 +53,6 @@ class Haus:
         humidity = self.scd.relative_humidity
         return pd.DataFrame({'co2': [round(co2, 4)], 'temp': [round(temp, 4)], 'humidity': [round(humidity, 4)]})
       
-
     def measure_soil(self, num_sensors=4):
         soil_sensors = []
         for i in range(num_sensors):
@@ -75,18 +74,11 @@ class Haus:
         return data
 
 
-
-    
-#haus = Haus()
-
-
 headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".')]
 
 
 def init_dashboard(server):
     haus = Haus()
-    #i2c = busio.I2C(board.SCL, board.SDA, frequency=50000)
-    #scd = adafruit_scd30.SCD30(i2c)
     dash_app = dash.Dash(
             server=server,
             routes_pathname_prefix='/plants/',
@@ -94,12 +86,15 @@ def init_dashboard(server):
             )
     dash_app.layout = html.Div(children=headers+[
         dash_table.DataTable(haus.measure_air().to_dict('records'),[{"name": i, "id": i} for i in haus.measure_air().columns], id='tbl'),
-        dcc.Interval(id="refresh", interval=5*1000, n_intervals=0),
+        html.Div(children="hello", id='lights'), 
+        dcc.Interval(id="refresh", interval=5*1000, n_intervals=0)
         ])
 
-    @dash_app.callback([Output("tbl", "data")], Input("refresh", "n_intervals"))
+    @dash_app.callback([Output("tbl", "data"), Output("lights", "children")], Input("refresh", "n_intervals"))
     def update(n_intervals):
         dt = haus.measure_air().to_dict('records')
-        return [dt]
+        lights = haus.change_lighting(change_to=None, get_value=True)
+        lights = "🌞" if lights else "🌙"
+        return [dt, lights]
 
     return dash_app.server
