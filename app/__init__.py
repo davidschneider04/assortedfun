@@ -21,6 +21,12 @@ db = SQLAlchemy(app)
 def index():
     return render_template('index.html', **locals())
 
+
+@app.route("/tv")
+def tv():
+    return render_template('tv.html', **locals())
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

@@ -3,3 +3,4 @@ commitscript.sh
 *pycache*
 *token*
 app/html/static/*
+app/html/stream/*
