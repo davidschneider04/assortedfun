@@ -26,6 +26,10 @@ def index():
 def tv():
     return render_template('tv.html', **locals())
 
+@app.route('/live_cam')
+def plantcam():
+    return render_template('live_cam.html', **locals())
+
 
 @app.errorhandler(404)
 def not_found(error):
