@@ -74,7 +74,7 @@ class Haus:
         return data
 
 
-headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".')]
+headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".'), html.A("Click here for hot live topless plant webcam action", href="/live_cam")]
 
 
 def init_dashboard(server):

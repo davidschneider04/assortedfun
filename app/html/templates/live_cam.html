@@ -12,7 +12,7 @@
     </head>
     <body>
 
-	    <h4>iPhone stream:</h4>
+	    <h4>Watch nothing happen, in real time:</h4>
       <video id="my_video_1" class="video-js vjs-fluid vjs-default-skin" controls preload="auto"
       data-setup='{}'>
         <source src="../stream/hls/plantcam.m3u8" type="application/x-mpegURL">
@@ -22,16 +22,6 @@
     player.play();
 	    </script>
 
-    <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls> </video>
-
-<script src="video.js"></script>
-<script src="dash.all.js"></script>
-<script src="videojs-dash.min.js"></script>
-<script>
-  var player = videojs('example-video');
-  player.src({ src: 'rtmp://192.168.0.17/live/plantcam', type: 'application/dash+xml'});
-  player.play();
-</script>
-      
+     
     </body>
     </html>
