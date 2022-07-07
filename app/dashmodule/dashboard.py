@@ -5,6 +5,7 @@ import subprocess
 import time
 
 import adafruit_mcp4725
+from adafruit_seesaw.seesaw import Seesaw
 import adafruit_scd30
 import adafruit_tca9548a
 import board
@@ -63,15 +64,12 @@ class Haus:
                 print('wiring error')
         metrics = []
         values = []
-        for i, ss in enumerate(soil_sensors):
-            moisture = ss.moisture_read()
-            temp = ss.get_temp()
-            metrics.append(f'soil_moisture_{i}')
-            values.append(moisture)
-            metrics.append(f'soil_temp_{i}')
-            values.append(temp)
+        soil = []
+        for i, ss in enumerate(soil_sensors, start=1):
+            soil.append((i, ss.moisture_read(), ss.get_temp()))
+        soil_df = pd.DataFrame(soil, columns=['sensor_number', 'soil_moisture', 'soil_temp'])
         data = {'metrics': metrics, 'values': values}
-        return data
+        return soil_df
 
 
 headers = [html.H1(children='The Plants'), html.Div(children='Everything is "fine".'), html.A("Click here for hot live topless plant webcam action", href="/live_cam")]
@@ -86,15 +84,23 @@ def init_dashboard(server):
             )
     dash_app.layout = html.Div(children=headers+[
         dash_table.DataTable(haus.measure_air().to_dict('records'),[{"name": i, "id": i} for i in haus.measure_air().columns], id='tbl'),
+        dash_table.DataTable(haus.measure_soil().to_dict('records'),[{"name": i, "id": i} for i in haus.measure_soil().columns], id='soil_tbl'),
         html.Div(children="hello", id='lights'), 
         dcc.Interval(id="refresh", interval=5*1000, n_intervals=0)
         ])
 
-    @dash_app.callback([Output("tbl", "data"), Output("lights", "children")], Input("refresh", "n_intervals"))
+    @dash_app.callback(
+            [
+                Output("tbl", "data"),
+                Output("soil_tbl", "data"),
+                Output("lights", "children")
+                ],
+            Input("refresh", "n_intervals"))
     def update(n_intervals):
-        dt = haus.measure_air().to_dict('records')
+        air = haus.measure_air().to_dict('records')
+        soil = haus.measure_soil().to_dict('records')
         lights = haus.change_lighting(change_to=None, get_value=True)
         lights = "🌞" if lights else "🌙"
-        return [dt, lights]
+        return [air, soil, lights]
 
     return dash_app.server
