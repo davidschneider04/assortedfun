@@ -46,29 +46,36 @@ class Haus:
         """
         Measure CO2/temp/humidity of air
         """
+        success = False
         while not self.scd.data_available:
             time.sleep(.1)
-        co2 = self.scd.CO2
-        temp = self.scd.temperature
-        temp = ((temp*(9/5))+32) # convert C -> F degrees
-        humidity = self.scd.relative_humidity
+        while not success:
+            try:
+                co2 = self.scd.CO2
+                temp = self.scd.temperature
+                temp = ((temp*(9/5))+32) # convert C -> F degrees
+                humidity = self.scd.relative_humidity
+            except RuntimeError:
+                time.sleep(.1)
+                continue
+            else:
+                success = True 
         return pd.DataFrame({'co2': [round(co2, 4)], 'temp': [round(temp, 4)], 'humidity': [round(humidity, 4)]})
       
     def measure_soil(self, num_sensors=4):
         soil_sensors = []
         for i in range(num_sensors):
+            if i in (0,1): ## this is a wiring error i need to fix
+                continue
             try:
                 soil_sensor = Seesaw(self.tca[i+2], addr=0x36)
                 soil_sensors.append(soil_sensor)
-            except (OSError, ValueError) as e:
-                print('wiring error')
-        metrics = []
-        values = []
-        soil = []
-        for i, ss in enumerate(soil_sensors, start=1):
-            soil.append((i, ss.moisture_read(), ss.get_temp()))
-        soil_df = pd.DataFrame(soil, columns=['sensor_number', 'soil_moisture', 'soil_temp'])
-        data = {'metrics': metrics, 'values': values}
+            except (OSError, ValueError, RuntimeError) as e:
+                #pass
+                continue
+                print(f'wiring error on sensor {i+1} (tca addr {i+2})')
+        measurements = ['sensor_number', 'soil_moisture', 'soil_temp']
+        soil_df = pd.DataFrame([(i, ss.moisture_read(), ss.get_temp()) for i, ss in enumerate(soil_sensors, start=1)], columns=measurements)
         return soil_df
 
 
@@ -85,7 +92,7 @@ def init_dashboard(server):
     dash_app.layout = html.Div(children=headers+[
         dash_table.DataTable(haus.measure_air().to_dict('records'),[{"name": i, "id": i} for i in haus.measure_air().columns], id='tbl'),
         dash_table.DataTable(haus.measure_soil().to_dict('records'),[{"name": i, "id": i} for i in haus.measure_soil().columns], id='soil_tbl'),
-        html.Div(children="hello", id='lights'), 
+        html.Div(children="light_status_emoji", id='lights'), 
         dcc.Interval(id="refresh", interval=5*1000, n_intervals=0)
         ])
 
