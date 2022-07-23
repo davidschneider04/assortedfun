@@ -2,5 +2,5 @@ appenv*
 commitscript.sh
 *pycache*
 *token*
-app/html/static/*
-app/html/stream/*
+*app/html/static/*
+*app/html/stream/*
