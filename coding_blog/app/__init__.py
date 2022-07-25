@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Blueprint, Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 import numpy as np
 
@@ -11,9 +11,18 @@ app.config.from_object('config')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-@app.route("/")
+blog_bp = Blueprint('blog', __name__, template_folder='_build/html/html/templates')
+app.register_blueprint(blog_bp)
+
+@app.route("/blog")
 def index():
+    print('index')
     return render_template('index.html', **locals())
+
+@app.route('/blog/<entry>')
+def blog_entry(entry):
+    print(entry)
+    return render_template(f'blog_entries/{entry}.html', **locals())
 
 
 @app.errorhandler(404)

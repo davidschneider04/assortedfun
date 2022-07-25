@@ -4,3 +4,6 @@ commitscript.sh
 *token*
 *app/html/static/*
 *app/html/stream/*
+*_build*
+*_static*
+*_templates*
