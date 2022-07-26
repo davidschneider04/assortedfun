@@ -1,6 +1,8 @@
 Code Knowledge Brain Dump
 ==============================
 
+first of all, you should know :term:`hoopoo`
+
 Python packages:
     
 At their core, these are just python files that save been structured a special way to make them more extendable.

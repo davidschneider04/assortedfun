@@ -12,7 +12,7 @@ Welcome to AssortedFun's documentation!
    :caption: Contents:
 
    html/templates/blog_entries/*
-
+   glossary
 
 Indices and tables
 ==================
