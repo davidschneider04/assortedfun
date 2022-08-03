@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {% block html_head %}
   <link rel="shortcut icon" href="/html/static/img/favicon.ico" />
   <link rel="stylesheet" href="style.css" />
-  {% endblock %}
+  {% block html_head %}{% endblock %}
 </head>
 <body>
-  {% block content %}
   <div id="content">
+    {% block content %}{% endblock %}
   </div>
-  {% endblock %}
 
   <div id="footer">
     {% block footer %}
