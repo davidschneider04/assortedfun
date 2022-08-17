@@ -22,9 +22,17 @@ def index():
     return render_template('index.html', **locals())
 
 
+#TODO: squash these
+
+@app.route("/secret_tunnel")
+def secret_tunnel():
+    return render_template('secret_tunnel.html', **locals())
+
+
 @app.route("/tv")
 def tv():
     return render_template('tv.html', **locals())
+
 
 @app.route('/live_cam')
 def plantcam():

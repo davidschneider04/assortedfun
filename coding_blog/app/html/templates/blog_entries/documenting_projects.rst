@@ -1,7 +1,6 @@
-Code Knowledge Brain Dump
-==============================
+Documenting Projects With Sphinx and Flask
+===============================================
 
-first of all, you should know :term:`hoopoo`
 
 Python packages:
     
