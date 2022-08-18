@@ -2,15 +2,35 @@
 
 <title>A place for things</title>
 {% block content %}
-  <br>
-  <div class="testel">
-  This website is an assortment of things I find fun.
-  <br>
-  <a href="/plants/"><img src="static/img/plants_icon.svg" alt="Plants" width="320px" height="480px"></a>
-  <br>
+<div class="container custcontain">
+  <div class="descriptive_text" style="padding-top:5vh;">
+    <p>This website is an assortment of things I find fun.</p>
+    <p style="margin-bottom:5vh;">Hopefully you agree!</p>
   </div>
-  <div class="block_element">
-    <a href="/blog"><img src="static/img/code_blog_icon.svg" alt="Code Blog" width="480px" height="320px"></a>
-    </div>
-    <a href="https://graniteturtle.com"><img src="static/img/leather_icon.svg" alt="Leather Store" width="480px" height="320px"></a>  
-  {% endblock %}
+  <div class="row custrow">
+		<div class="col-4">
+			<a href="/plants/"><img src="static/img/plants_icon.svg" alt="Plants" class="rectangular_logo"></a>
+		</div>
+		<div class="col-7 rowtext">
+			<p>I built a box with lights and put seeds in it. Mostly herbs, peppers too. My goal is to automate the process and collect as much data as possible. Live feed provided with fragmented video streaming.</p>
+		</div>
+  </div>
+  <div class="row custrow">
+		<div class="col-4">
+	    <a href="/blog"><img src="static/img/code_blog_icon.svg" alt="Code Blog" class="rectangular_logo"></a>
+		</div>
+		<div class="col-7 rowtext">
+			<p>I write down things that I've learned so that I can remember them later. It's just my thoughts, so no guarantee that all the details are 100% correct. If you spot something that could be improved, leave me a note in the comments and win a thumbs up as a prize!</p>
+		</div>
+		
+	</div>
+  <div class="row custrow">
+		<div class="col-4">
+    	<a href="https://graniteturtle.com"><img src="static/img/leather_icon.svg" alt="Leather Store" class="rectangular_logo"></a>  
+  	</div>
+		<div class="col-7 rowtext">
+			<p>I have a lot of fun working with leather. It's a relaxing way to work with my hands. This site is a gallery/shop for items I've made. It's also a space for me to document my techniques for my own future work and in case anyone else is interested in trying themselves!</p>
+		</div>
+	</div>
+</div>
+{% endblock %}

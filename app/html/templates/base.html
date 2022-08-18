@@ -2,23 +2,52 @@
 <html>
 <head>
   {% block html_head %}
-  <style>
-* {color:red}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style> 
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+    * {
+      font-family: 'Poppins', sans-serif;
+		}
+    .descriptive_text {
+			font-size:2.5vh;
+    }
+    .custcontain {
+			background-color:#ADD8E6;
+			height:100vh;
+    }
+    .custrow {
+			background-color:#EEEEEE;
+			margin:1vw;
+			height:20vh;
+			font-size:1.25vh;
+    }
+    .rectangular_logo {
+	    height:20vh;
+	    width:100%;
+			display: flex;
+			justify-content: center;
+			
+	   	padding:1vh; 
+    }
+		.rowtext {
+			padding:2.5vw;
+			
+			vertical-align:middle;
 
+		}
   </style>
   <link rel="shortcut icon" href="/html/static/img/favicon.ico" />
-  <link rel="stylesheet" href="/html/static/CSS/custom.css" />
+  
   {% endblock %}
 </head>
 <body>
   {% block content %}
-  <div id="content">
-  </div>
   {% endblock %}
 
-  <div id="footer">
+  <div id="footer" >
     {% block footer %}
-    &copy; Copyright 2022 by <a href="davidschneiderprojects.com">David Schneider</a>.
+    &copy; Copyright 2022 by <a href="https://davidschneiderprojects.com">David Schneider</a>.
     {% endblock %}
   </div>
 </body>
